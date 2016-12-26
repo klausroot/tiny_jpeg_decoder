@@ -1521,7 +1521,7 @@ static void print_SOF(const unsigned char *stream)
   };
 #endif
 
-  precision = stream[2];
+  precision = stream[2]; //数据精度 -- 08 1个字节
   height = be16_to_cpu(stream+3);
   width  = be16_to_cpu(stream+5);
   nr_components = stream[7];
@@ -1790,7 +1790,7 @@ static int find_next_rst_marker(struct jdec_private *priv)
      else if (marker == EOI)
        return 0;
    }
-  trace("RST Marker %d found at offset %d\n", priv->last_rst_marker_seen, stream - priv->stream_begin);
+  trace("RST Marker %d found at offset 0x%x\n", priv->last_rst_marker_seen, stream - priv->stream_begin);
 
   priv->stream = stream;
   priv->last_rst_marker_seen++;
@@ -1821,25 +1821,25 @@ static int parse_JFIF(struct jdec_private *priv, const unsigned char *stream)
      next_chunck = stream + chuck_len;
      switch (marker)
       {
-       case SOF:
+       case SOF://C0
 	 if (parse_SOF(priv, stream) < 0)
 	   return -1;
 	 break;
-       case DQT:
+       case DQT://DB
 	 if (parse_DQT(priv, stream) < 0)
 	   return -1;
 	 break;
-       case SOS:
+       case SOS://DA
 	 if (parse_SOS(priv, stream) < 0)
 	   return -1;
 	 sos_marker_found = 1;
 	 break;
-       case DHT:
+       case DHT://C4
 	 if (parse_DHT(priv, stream) < 0)
 	   return -1;
 	 dht_marker_found = 1;
 	 break;
-       case DRI:
+       case DRI://DD
 	 if (parse_DRI(priv, stream) < 0)
 	   return -1;
 	 break;

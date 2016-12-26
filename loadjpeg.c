@@ -103,21 +103,33 @@ static void write_tga(const char *filename, int output_format, int width, int he
  */
 static void write_yuv(const char *filename, int width, int height, unsigned char **components)
 {
-  FILE *F;
-  char temp[1024];
+  FILE *fyuv;
+  char path[1024];
 
-  snprintf(temp, 1024, "%s.Y", filename);
+  sprintf(path, "%s.yuv", filename);
+  fyuv = fopen(path, "wb");
+  if (!fyuv){
+	  printf("open %s file err.\n", path);
+	  return;
+  }
+  fwrite(components[0], width, height, fyuv);
+  fwrite(components[1], width*height/4, 1, fyuv);
+  fwrite(components[2], width*height/4, 1, fyuv);
+  fclose(fyuv);
+#if 0
+  snprintf(temp, 1024, "%s.Y", path);
   F = fopen(temp, "wb");
-  fwrite(components[0], width, height, F);
-  fclose(F);
-  snprintf(temp, 1024, "%s.U", filename);
+  fwrite(components[0], width, height, fyuv);
+  fclose(fyuv);
+  snprintf(temp, 1024, "%s.U", path);
   F = fopen(temp, "wb");
-  fwrite(components[1], width*height/4, 1, F);
-  fclose(F);
-  snprintf(temp, 1024, "%s.V", filename);
+  fwrite(components[1], width*height/4, 1, fyuv);
+  fclose(fyuv);
+  snprintf(temp, 1024, "%s.V", path);
   F = fopen(temp, "wb");
   fwrite(components[2], width*height/4, 1, F);
   fclose(F);
+#endif
 }
 
 /**
